@@ -24,9 +24,9 @@ class CMA {
 		$this->api_secret = $api_secret;
 		$this->api_public = $api_public;
 		$this->base_url = 'https://citadel.li/merchant_api/v1/';
-		$this->raw = !function_exists('curl_init');
 	}
-	public function _http_curl($url, $method, $data, $flags)
+
+	public function _http_wp($url, $method, $data, $flags)
 	{
 		$content = '';
 		$ctype = 'application/x-www-form-urlencoded';
@@ -41,21 +41,22 @@ class CMA {
 			$auth_value = $this->api_public;
 		}
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		if ($method == 'POST' || $method == 'PUT')
-		{
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $content);
-		}
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-			'Content-Type: ' . $ctype,
-			'Content-Length: ' . strlen($content),
-			$auth_header .': ' . $auth_value,
+		$response = wp_remote_request($url, array(
+			'method' => $method,
+			'body' => $content,
+	//		'cookies' => array()
+	/*		'timeout' => '5',
+			'redirection' => '5',
+			'httpversion' => '1.0',
+	*/
+			'blocking' => true,
+			'headers' => array(
+				'Content-Type' => $ctype,
+				'Content-Length' => strlen($content),
+				$auth_header => $auth_value,
+			),
 		));
-		$result = curl_exec($ch);
-		curl_close($ch);
+		$result = wp_remote_retrieve_body( $response );
 
 		if (!$result) throw new CMA_EX(__('CITADEL Gateway Error', 'woothemes'));
 		try {
@@ -65,45 +66,7 @@ class CMA {
 		}
 		return $result;
 	}
-	public function _http_raw($url, $method, $data, $flags)
-	{
-		$content = '';
-		$ctype = 'application/x-www-form-urlencoded';
-		$auth_header = 'X-Citadel-Auth';
-		$auth_value = $this->api_secret;
-		if ($flags == 'json') {
-			$content = json_encode($data);
-			$ctype = 'application/json';
-		}
-		if ($flags == 'pub') {
-			$auth_header = 'X-Citadel-Public';
-			$auth_value = $this->api_public;
-		}
 
-		$result = file_get_contents(
-			$url,
-			false,
-			stream_context_create(array(
-			'http' => array(
-				'header' => array(
-					'Content-Type: ' .$ctype,
-					'Content-Length: ' . strlen($content),
-					$auth_header .': ' . $auth_value,
-				),
-				'method' => $method,
-				'content' => $content,
-				)
-			))
-		);
-
-		if (!$result) throw new CMA_EX(__('CITADEL Gateway Error', 'woothemes'));
-		try {
-			$result = json_decode($result, true);
-		} catch (Exception $e) {
-			throw new CMA_EX(__('CITADEL Gateway Error', 'woothemes').": can not decode response");
-		}
-		return $result;
-	}
 	public function fullURL($url)
 	{
 		return rtrim($this->base_url, '/').'/'.ltrim($url,'/');
@@ -112,14 +75,7 @@ class CMA {
 	public function http_request($url, $method='GET', $data=array(), $flags='')
 	{
 		$url = $this->fullURL($url);
-		if ($this->raw)
-		{
-			return $this->_http_raw($url, $method, $data, $flags);
-		}
-		else
-		{
-			return $this->_http_curl($url, $method, $data, $flags);
-		}
+		return $this->_http_wp($url, $method, $data, $flags);
 	}
 	public function get_ticker($lcoin, $rcoin)
 	{
