@@ -9,6 +9,8 @@ Version: 1.0
 WC tested up to: 3.6.4
 */
 
+defined( 'ABSPATH' ) || exit;
+
 function add_citadel_gateway_class( $methods ) {
     $methods[] = 'WC_Gateway_Citadel_Merchant';
     return $methods;
@@ -168,6 +170,10 @@ class CMA {
 add_action( 'plugins_loaded', 'init_citadel_gateway_class' );
 
 function init_citadel_gateway_class() {
+if (!class_exists(WC_Payment_Gateway)) {
+	/* If Woocommerce hasn't been installed yet, abort */
+	return;
+}
 class WC_Gateway_Citadel_Merchant extends WC_Payment_Gateway {
 
 	public static $log_enabled = false;
