@@ -170,7 +170,7 @@ class CMA {
 add_action( 'plugins_loaded', 'init_citadel_gateway_class' );
 
 function init_citadel_gateway_class() {
-if (!class_exists(WC_Payment_Gateway)) {
+if (!class_exists('WC_Payment_Gateway')) {
 	/* If Woocommerce hasn't been installed yet, abort */
 	return;
 }
