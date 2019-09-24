@@ -66,6 +66,9 @@ class CMA {
 		} catch (Exception $e) {
 			throw new CMA_EX(__('CITADEL Gateway Error', 'woothemes').": can not decode response");
 		}
+		if (isset($result['error'])) {
+			throw new CMA_EX(__('CITADEL Gateway Error', 'woothemes').": ".$result['error']['message']);
+		}
 		return $result;
 	}
 
@@ -77,7 +80,17 @@ class CMA {
 	public function http_request($url, $method='GET', $data=array(), $flags='')
 	{
 		$url = $this->fullURL($url);
-		return $this->_http_wp($url, $method, $data, $flags);
+		try {
+			return $this->_http_wp($url, $method, $data, $flags);
+		} catch (Exception $e) {
+			$logger = wc_get_logger();
+			$msg = $e->getMessage() . "\n";
+			$msg .= "API request ( $method $url )\n";
+			$msg .= print_r($data, true);
+			//$msg .= $e->getTraceAsString();
+			$logger->error( $msg, array( 'source' => 'CITADEL' ) );
+			throw $e;
+		}
 	}
 	public function get_ticker($lcoin, $rcoin)
 	{
