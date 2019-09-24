@@ -123,7 +123,7 @@ class CMA {
 		{
 			$item_total = $this->precise($item->get_total() * $rate, $prec);
 			$item_price = $this->precise($item_total / $item->get_quantity(), $prec);
-			while ($this->precise($item_price * $item->get_quantity(), $prec)
+			while ($this->precise($item_price * $item->get_quantity(), $prec+1)
 			        < $item_total)
 			{
 				$item_total -= (1/pow(10,$prec));
@@ -139,9 +139,10 @@ class CMA {
 			);
 			$count_total += $item_total;
 		}
-		if ($count_total > 0 && $count_total < $total)
+		if ($count_total > 0 && $count_total != $total)
 		{
 			$rest = $this->precise($total - $count_total, $prec);
+			if ($rest > 0)
 			$positions[] = array(
 				"description"=> 'Coin difference',
 				"quantity"=> 1,
@@ -149,6 +150,7 @@ class CMA {
 				"total"=> $rest,
 				"price"=> $rest,
 			);
+			if ($rest < 0) $total = $count_total;
 		}
 		if ($gw->get_option('hide_positions') == 'yes')
 		{
