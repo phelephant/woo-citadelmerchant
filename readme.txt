@@ -3,7 +3,7 @@ Plugin Name: WooCommerce CITADEL Merchant Gateway
 Plugin URI: https://github.com/phelephant/woo-citadelmerchant
 Author: Phelephant
 Author URI: https://github.com/phelephant
-Stable tag: 1.1
+Stable tag: 1.2
 Tags: Woocommerce Checkout, Digital Goods, CITADEL
 Requires at least: 5.2
 Tested up to: 5.2.3
@@ -42,6 +42,9 @@ In the search field type "WooCommerce CITADEL Merchant Gateway" and click "Searc
 == Screenshots ==
 
 1. New payment option in the Admin panel.
+2. Configurable.
+3. Error reporting.
+4. URL verification is handled elsewhere. :(
 
 == Frequently Asked Questions ==
 
@@ -50,6 +53,10 @@ In the search field type "WooCommerce CITADEL Merchant Gateway" and click "Searc
 Automatic updates should work fine. As always, though, backup your existing site, prior to making any updates, just to be sure you can roll back, if anything goes wrong.
 
 == Changelog ==
+= 1.2 - 24-09-2019 =
+* Display actual CITADEL API error message to the end-user.
+* Do proper error logging via WooCommerce facilities.
+* Improve coin precision / sub-total calculations.
 = 1.1 - 22-09-2019 =
 * Handle situations when WooCommerce is not yet installed.
 = 1.0 - 24-06-2019 =

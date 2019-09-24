@@ -5,8 +5,8 @@ Plugin URI: https://github.com/phelephant/woo-citadelmerchant
 Author: Phelephant
 Author URI: https://github.com/phelephant
 Description: CITADEL Merchant Payment Gateway. Accept crypto payments with ease. Note: you will need a CTIADEL Merchant API key to use this plugin.
-Version: 1.0
-WC tested up to: 3.6.4
+Version: 1.2
+WC tested up to: 3.7.0
 */
 
 defined( 'ABSPATH' ) || exit;
